@@ -4,6 +4,10 @@ Tornado是一个web框架,可以工作在阻塞模式或异步非阻塞模式，
 
 ## Tornado 基础知识学
 
+
+### 基本应用
+
+a  Django/Tornado比较
 Django:
 ```
   socket:     无，  wsgiref
@@ -36,8 +40,13 @@ simple_tag:   有
 
 总结： 一个web框架必须有路由系统，视图函数，模板引警，cookies/csrf_token/xss
 
-### 基本应用
 
+b tornado安装：
+```
+pip3 install tornado
+```
+
+c 基本使用
 
 
 
