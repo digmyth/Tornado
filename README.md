@@ -134,6 +134,8 @@ settings = {  # 添加配置项
         self.get_query_arguments()          #  多个值
         self.get_body_argument()            #  POST 取值  
         self.get_body_arguments()           #  多个值
+        self.request                        #  封装了所有请求信息
+        self.request.files("xx")            #  取文件信息
 ```
 xsrf 使用
 ```
