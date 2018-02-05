@@ -34,8 +34,8 @@ simple_tag:   有
     uimethod:   有（相当于simple_tag）
     uimodule:   有（相当于simple_tag）
      cookie:    有  
-    session:    有
-       csrf:    有
+    session:    无
+       csrf:    有
         xss:    有
         其它：  没有
 ```
@@ -143,7 +143,33 @@ settings = {'set_xsrf': True,} # 添加配置项
 </form>
 ```
 
+由于没有sesssion,只能用cookie做登录验证，有普通cookie和加密cookie,过期时间这里是时间戳
+当设加密cookie时，需要添加配置项
+settings = {'cookie_secret':'asdf',}  #  类似于加盐
+设cookie
+```
+    if user == 'wxq' and pwd == '123':
+        v = time.time() + 10  # second
+        # self.set_cookie('xx', user, expires=v)
+        self.set_secure_cookie('xx', user, expires=v)   
+        self.redirect("seed.html")
+    else:
+        self.render("login.html",msg="用户名或密码错误")
 
+```
+
+取cookie
+```
+class SeedHandler(tornado.web.RequestHandler):
+    def get(self):
+        # if not self.get_cookie('xx',None):
+        if not self.get_secure_cookie('xx',None):
+            self.redirect('login.html')
+            return None    #  注意这里要有返回，不然代码还会向下执行
+
+        self.write("seed list")
+
+```
 
 ### 异步非阻塞
 
