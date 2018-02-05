@@ -100,7 +100,25 @@ application = tornado.web.Application([
 ])
 ```
 
+d  简单写一个登录页面来驱动我们的学习，涉及到目录结构分类
+E:\pycharm_project\tornado_t1  项目目录
+    tornado_dir
+        app.py:  路由关系映射
+    
 
+```
+
+```
+
+
+```
+        user=self.get_argument('user')      # get或post取单个值 
+        user=self.get_arguments()           # get或post取多个值
+        self.get_query_argument()           #  GET 取值
+        self.get_query_arguments()          #  多个值
+        self.get_body_argument()            #  POST 取值  
+        self.get_body_arguments()           #  多个值
+```
 
 
 ### 异步非阻塞
