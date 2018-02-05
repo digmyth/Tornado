@@ -119,6 +119,14 @@ E:\pycharm_project\tornado_t1  项目目录
         self.get_body_argument()            #  POST 取值  
         self.get_body_arguments()           #  多个值
 ```
+xsrf 使用
+```
+settings = {'set_xsrf': True,} # 添加配置项
+<form method="post">     
+        {% raw xsrf_form_html() %}
+</form>
+```
+
 
 
 ### 异步非阻塞
