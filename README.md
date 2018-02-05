@@ -194,6 +194,60 @@ extends include 引入对html的重用性与Django 一样，此处就略过了
 {% block content %}{% end %}
 ```
 
+Tornado内置渲染方法
+```
+在模板中默认提供了一些函数、字段、类以供模板使用：
+
+escape: tornado.escape.xhtml_escape 的別名
+xhtml_escape: tornado.escape.xhtml_escape 的別名
+url_escape: tornado.escape.url_escape 的別名
+json_encode: tornado.escape.json_encode 的別名
+squeeze: tornado.escape.squeeze 的別名
+linkify: tornado.escape.linkify 的別名
+datetime: Python 的 datetime 模组
+handler: 当前的 RequestHandler 对象
+request: handler.request 的別名
+current_user: handler.current_user 的別名
+locale: handler.locale 的別名
+_: handler.locale.translate 的別名
+static_url: for handler.static_url 的別名
+xsrf_form_html: handler.xsrf_form_html 的別名
+```
+当这些渲染方法不能满足我们需求时需要我们自定义类似simple_tag方法:ui_methods/ui_modules
+ui_methods
+定义
+```
+tornado_dir/uimethod_test.py
+def tab(self):
+    return "<a href='http://www.baidu.com'>百度</a>"
+
+```
+
+注册
+```
+ from tornado_t import uimethod_test as mt
+settings = {
+    'set_xsrf': True,
+    'template_path': 'views',
+    'static_path': 'wxq',
+    # 'static_url_prefix':'/wxq/',
+    'cookie_secret':'asdf',
+    'login_url': '/login.html',
+    'ui_methods': mt,
+   }
+```
+
+使用
+```
+{{ tab() }}     # 不渲染 html标签 
+{% raw  tab() %}
+```
+ 
+ 
+ 
+
+
+
 
 ### 异步非阻塞
 
