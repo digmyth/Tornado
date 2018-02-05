@@ -171,6 +171,22 @@ class SeedHandler(tornado.web.RequestHandler):
 
 ```
 
+模板语言
+Tornado与Django略有不同：
+```
+1  xsrf  {% raw xsrf_form_html() %}
+2  值的渲染不在是点，而是python的语法相同 {{ item[0]  }} {{  item.get("title") }}
+3  语句endfor endif 变是end 
+  <ul>
+      {% for item in list_info %}
+          <li>{{item}}</li>
+      {% end %}
+  </ul>
+
+{% if len(items) > 2 %} {% end %}
+{% block content %}{% end %}
+```
+
 ### 异步非阻塞
 
 
