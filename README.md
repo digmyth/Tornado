@@ -4,7 +4,7 @@ Tornado是一个MVC web框架,可以工作在阻塞模式或异步非阻塞模�
 
 [参考博客](https://www.cnblogs.com/wupeiqi/articles/5702910.html)
 
-## Tornado 基础知识学
+## Tornado 基础知识学习
 
 
 ### 基本应用
