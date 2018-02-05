@@ -49,6 +49,40 @@ pip3 install tornado
 ```
 
 c 基本使用
+快速上手,随便建个文件就可以工作起来,注意里面传参
+Tornado_dir/server.py
+```
+import tornado.ioloop
+import tornado.web
+
+class HomeHandler(tornado.web.RequestHandler):
+    def get(self,nid):
+        self.write("Home,%s world"%nid)
+
+application = tornado.web.Application([
+    (r"/home/(\d+)", HomeHandler),
+])
+
+if __name__ == "__main__":
+    application.listen(8888)
+    tornado.ioloop.IOLoop.instance().start()
+```
+
+如果有域名匹配，则域名匹配优先
+```
+class XxHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.write("Hello, www.xx.com")
+        
+application.add_handlers("www.xx.com",[
+    (r"/index", XxHandler),
+])
+```
+
+反向生成URL
+```
+
+```
 
 
 
