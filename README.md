@@ -2,6 +2,8 @@
 Tornado是一个web框架,可以工作在阻塞模式或异步非阻塞模式，因为异步非阻塞工作模式Tornado非常出名，速度相当快，同时可以当作异步非阻塞IO模块来用.
 值得花时间来学习它
 
+[参考博客](https://www.cnblogs.com/wupeiqi/articles/5702910.html)
+
 ## Tornado 基础知识学
 
 
