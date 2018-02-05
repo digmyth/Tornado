@@ -104,13 +104,18 @@ d  简单写一个登录页面来驱动我们的学习，涉及到目录结构�
 E:\pycharm_project\tornado_t1  项目目录
     tornado_dir
         app.py:  路由关系映射
-    
-
+    
+静态文件定义
+```
+settings = {  # 添加配置项
+    'static_path': 'wxq',
+    # 'static_url_prefix':'/wxq/',
+    }
+<link rel="stylesheet" href="/static/css/commons.css">   # 或
+<link rel="stylesheet" href="{{ static_url('css/commons.css') }}">  # 推荐用法，内部实现的md5避免缓存
 ```
 
-```
-
-
+后端取值
 ```
         user=self.get_argument('user')      # get或post取单个值 
         user=self.get_arguments()           # get或post取多个值
