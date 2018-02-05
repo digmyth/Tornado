@@ -187,6 +187,14 @@ Tornado与Django略有不同：
 {% block content %}{% end %}
 ```
 
+
+extends include 引入对html的重用性与Django 一样，此处就略过了
+```
+{%  extends 'layout.html' %}
+{% block content %}{% end %}
+```
+
+
 ### 异步非阻塞
 
 
