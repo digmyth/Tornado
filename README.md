@@ -79,10 +79,27 @@ application.add_handlers("www.xx.com",[
 ])
 ```
 
-反向生成URL
+根据别名反向生成URL，Tornado没有namespace
+```
+class MainHandler(tornado.web.RequestHandler):
+    def get(self):
+        url=self.application.reverse_url('n1')
+        print("n1", url)
+
+        self.write("Hello, world")
+
+class HomeHandler(tornado.web.RequestHandler):
+    def get(self,nid):
+        url=self.application.reverse_url('n2',nid)  # 根据别名反向生成URL
+        print("n2", url)
+        self.write("Hello, home page")
+
+application = tornado.web.Application([
+    (r"/index", MainHandler,{},'n1'),               # 第4个参数是别名
+    (r"/home/(\d+)", HomeHandler,{},'n2'),
+])
 ```
 
-```
 
 
 
