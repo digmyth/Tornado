@@ -1,5 +1,5 @@
 # Tornado
-Tornado是一个web框架,可以工作在阻塞模式或异步非阻塞模式，因为异步非阻塞工作模式Tornado非常出名，速度相当快，同时可以当作异步非阻塞IO模块来用.
+Tornado是一个MVC web框架,可以工作在阻塞模式或异步非阻塞模式，因为异步非阻塞工作模式Tornado非常出名，速度相当快，同时可以当作异步非阻塞IO模块来用.
 值得花时间来学习它
 
 [参考博客](https://www.cnblogs.com/wupeiqi/articles/5702910.html)
@@ -104,7 +104,18 @@ d  简单写一个登录页面来驱动我们的学习，涉及到目录结构�
 E:\pycharm_project\tornado_t1  项目目录
     tornado_dir
         app.py:  路由关系映射
-    
+ 
+ 
+ HTML文件位置定义
+ ```
+ settings = {'template_path': 'views',}
+ #views/tpl/login.html
+  
+ class LoginHandler(tornado.web.RequestHandler):   #后端
+    def get(self):
+        self.render("tpl/login.html",msg="")
+ ```
+ 
 静态文件定义
 ```
 settings = {  # 添加配置项
