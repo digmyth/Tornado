@@ -3,7 +3,9 @@ Tornado是一个web框架,可以工作在阻塞模式或异步非阻塞模式，
 值得花时间来学习它
 
 ## Tornado 基础知识学
+
 Django:
+```
   socket:     无，  wsgiref
    中间件：    有
  路由系统：    有
@@ -16,8 +18,9 @@ simple_tag:   有
     csrf:     有
     xss:      有
     其它：缓存，信号，Form, ModelForm,Admin
-    
+```    
  Tornado:
+```
      socket:    有， 有wsgiref    (Tornado就是用了自有socket实现异步非阻塞和websocket,Tornado如果用了wsgiref就没有异步非阻塞和websocket功能)
      中间件：    没有（自己写）
     路由系统:    有
@@ -29,6 +32,9 @@ simple_tag:   有
        csrf:    有
         xss:    有
         其它：  没有
+```
+
+总结： 一个web框架必须有路由系统，视图函数，模板引警，cookies/csrf_token/xss
 
 ### 基本应用
 
