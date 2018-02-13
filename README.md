@@ -47,9 +47,27 @@ b tornado安装：
 ```
 pip3 install tornado
 ```
+快速上手示例
+```
+import tornado.web
+import tornado.ioloop
+from tornado.web import RequestHandler
+
+class IndexHandler(RequestHandler):
+    def get(self):
+        self.write("index page...")
+
+application = tornado.web.Application([
+    (r"/index.html", IndexHandler),
+])
+
+if __name__ == "__main__":
+    application.listen(8888)
+    tornado.ioloop.IOLoop.instance().start()
+```
 
 c 基本使用
-快速上手,随便建个文件就可以工作起来,注意里面传参
+基于URL正则的快速上手示例,随便建个文件就可以工作起来,注意里面传参
 Tornado_dir/server.py
 ```
 import tornado.ioloop
