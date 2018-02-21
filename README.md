@@ -279,6 +279,32 @@ Tornado原生支持Websocket
 
 ## 自定义Session组件（公共组件，Tornado为例）
 
+tornado执行到类的get()或post()时己经是对象调用了，那么这个类一定实例化在前，也就是先执行了`__init__()`构造方法,我们在源码里可以看到构造函数最后还有一个勾子函数`self.initialize(**kwargs)`,也就是说我们Handler类可以定义一个initialize方法，不必自己定义重写__init__()构造方法
+
+同时还有一个知识点,`{'k1':'v1'}`参数会传给`initialize(**kwargs)`方法的**kwargs参数，'n1'是URL别名
+
+```
+class IndexHandler(RequestHandler):
+    def initialize(self,*args,**kwargs):
+        print(kwargs)
+
+    def get(self):
+        self.write("index page...")
+
+application = tornado.web.Application([
+    (r"/index.html", IndexHandler,{'k1':'v1'},'n1'),
+])
+```
+
+cookies/session流程
+1 生成一段随机字符串作为value写入浏览器，key一般为'session_id',称为cookies
+2 服务端session中保存敏感信息,key为这个随机字符串，value={'user':'wxq','k1':'v1'}自定义session属性
+
+
+
+
+
+
 
 ## 自定义Form验证组件（公共组件，Tornado为例）
 
