@@ -271,7 +271,9 @@ settings = {
 
 ### 异步非阻塞
 
+Torndao web框架的异步非阻塞相关知识请参考：
 
+https://github.com/digmyth/Tornado/blob/master/tornado_builtin_web_framework/Tornado%E5%BC%82%E6%AD%A5%E9%9D%9E%E9%98%BB%E5%A1%9E.md
 
 ### 原生WebSocket
 Tornado原生支持Websocket
