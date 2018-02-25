@@ -1,12 +1,13 @@
-## Tornado异步非阻塞.
+## Tornado异步非阻塞
 
+### 一、参考
 这里主要学习Tornado牛逼之处，异步非阻塞，其中有异步类库和Future相关知识，很重要
 
 参考链接：
 
 http://www.cnblogs.com/wupeiqi/articles/6536518.html
 
-
+### 二、Tornado异步探究之Future
 
 Tornado可以工作在阻塞模式，也可以工作在非阻塞模式
 
@@ -145,7 +146,7 @@ if __name__ == "__main__":
     tornado.ioloop.IOLoop.instance().start()
 ```
 
-挺好玩的，那么我们用线程再来玩一把,验证Future原理
+挺好玩的，那么我们用线程再来玩一把,验证Future特性
 ```
 import tornado.web
 import tornado.ioloop
@@ -183,4 +184,5 @@ if __name__ == "__main__":
     tornado.ioloop.IOLoop.instance().start()
 ```
 
+### 三、
 
