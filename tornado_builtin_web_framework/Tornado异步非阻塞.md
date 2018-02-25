@@ -192,7 +192,57 @@ if __name__ == "__main__":
 
 http://www.cnblogs.com/wupeiqi/articles/5702910.html
 
+安装模块
+是对pymysql的封装，基于Future实现了连接池异步的模块
+```
+pip3 install Tornado-MySQL
 ```
 
+app.py代码
+```
+import tornado.web
+import tornado_mysql
+from tornado import gen
+
+@gen.coroutine
+def get_user(user):
+    conn = yield tornado_mysql.connect(host='127.0.0.1', port=3306, user='root', passwd='123', db='db',charset='utf8')
+    cur = conn.cursor()
+    yield cur.execute("select sleep(10)")
+    data = cur.fetchone()
+    cur.close()
+    conn.close()
+    raise gen.Return(data)
+
+class LoginHandler(tornado.web.RequestHandler):
+    def get(self, *args, **kwargs):
+        self.render('login.html')
+
+    @gen.coroutine
+    def post(self, *args, **kwargs):
+        user = self.get_argument('user')
+        data = yield  gen.Task(get_user, user)
+        if data:
+            print(data)
+            self.redirect('www.digmyth.com')
+        else:
+            self.render('login.html')
+
+application = tornado.web.Application([
+    (r'/login.html', LoginHandler),
+])
+
+if __name__ == '__main__':
+    application.listen(8008)
+    tornado.ioloop.IOLoop.instance().start()
+```
+
+
+login.html 代码
+```
+    <form method="post">
+        <p><input type="text" name="user"></p>
+        <input type="submit" value="提交">
+    </form>
 ```
 
