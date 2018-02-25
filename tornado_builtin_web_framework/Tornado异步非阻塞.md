@@ -2,6 +2,12 @@
 
 这里主要学习Tornado牛逼之处，异步非阻塞，其中有异步类库和Future相关知识，很重要
 
+参考链接：
+
+http://www.cnblogs.com/wupeiqi/articles/6536518.html
+
+
+
 Tornado可以工作在阻塞模式，也可以工作在非阻塞模式
 
 Tornado阻塞模式示例
@@ -36,7 +42,6 @@ if __name__ == "__main__":
 ```
 
 
-
 Tornado非阻塞模式示例
 ```
 import tornado.web
@@ -52,8 +57,8 @@ class IndexHandler(RequestHandler):
     def get(self):
         print("start..")
         future = Future()
-        tornado.ioloop.IOLoop.current().add_timeout(time.time() + 5, self.done)
-        yield future
+        tornado.ioloop.IOLoop.current().add_timeout(time.time() + 5, self.done)  # 模拟耗时IO，没什么卵用
+        yield future
         print('end')
 
     def done(self, *args, **kwargs):
@@ -67,5 +72,115 @@ application = tornado.web.Application([
 if __name__ == "__main__":
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
+```
+
+来一个有用的示例：
 
 ```
+import tornado.web
+import tornado.ioloop
+from tornado.web import RequestHandler
+from tornado import gen
+from tornado import httpclient
+
+class IndexHandler(RequestHandler):
+    @gen.coroutine
+    def get(self):
+        print("start..")
+        http = httpclient.AsyncHTTPClient()
+        yield http.fetch('http://www.github.com',self.done)  # http.fetch()返回Future对象，
+
+    def done(self,response, *args, **kwargs):
+        print(response)        # response是http://www.github.com返回的结果，用于self.done(response)回调函数
+        self.write('返回请求')
+        self.finish()
+
+application = tornado.web.Application([
+    (r"/index.html", IndexHandler),
+])
+
+if __name__ == "__main__":
+    application.listen(8888)
+    tornado.ioloop.IOLoop.instance().start()
+```
+
+有了Future对象就能异步非阻塞了，那么我们就有必要深究下Future到底是什么了？
+
+访问`http://127.0.0.1:8888/index.html`返时Future对象，会被一直hang住，直到`http://127.0.0.1:8888/set`时fu.set_result('666')才返回结果，去执行回调函数，结束请求
+```
+import tornado.web
+import tornado.ioloop
+from tornado.web import RequestHandler
+from tornado import gen
+from tornado.concurrent import  Future
+
+fu = None
+
+class IndexHandler(RequestHandler):
+    @gen.coroutine
+    def get(self):
+        print("疯狂的追求")
+        global fu
+        fu = Future()
+        fu.add_done_callback(self.done)
+        yield fu
+
+    def done(self,response, *args, **kwargs):
+        print(response)   # set_result时的'666'
+        self.write('终于等到你')
+        self.finish()
+
+class SetHandler(RequestHandler):
+    def get(self):
+        fu.set_result('666')
+        self.write("只能帮你到这儿了")
+
+application = tornado.web.Application([
+    (r"/index.html", IndexHandler),
+    (r"/set", SetHandler),
+])
+
+if __name__ == "__main__":
+    application.listen(8888)
+    tornado.ioloop.IOLoop.instance().start()
+```
+
+挺好玩的，那么我们用线程再来玩一把,验证Future原理
+```
+import tornado.web
+import tornado.ioloop
+from tornado.web import RequestHandler
+from tornado import gen
+from tornado.concurrent import  Future
+from threading import Thread
+import time
+
+def task(future):
+    time.sleep(5)
+    future.set_result('set ok')
+
+class IndexHandler(RequestHandler):
+    @gen.coroutine
+    def get(self):
+        print("疯狂的追求")
+        fu = Future()
+        fu.add_done_callback(self.done)
+        t=Thread(target=task,args=(fu,))
+        t.start()
+        yield fu
+
+    def done(self,response, *args, **kwargs):
+        print(response.result())   # set_result时的'666'
+        self.write('终于等到你...')
+        self.finish()
+
+application = tornado.web.Application([
+    (r"/index.html", IndexHandler),
+])
+
+if __name__ == "__main__":
+    application.listen(8888)
+    tornado.ioloop.IOLoop.instance().start()
+```
+
+
