@@ -291,5 +291,10 @@ https://github.com/digmyth/Tornado/blob/master/Tornado_Session_define/tornado_se
 
 ## 自定义Form验证组件（公共组件，Tornado为例）
 
+Tornado没有Django一样强大的Form来快速生成HTML 标签，所以有必要自己开发一款适合自己的可移植性可扩展性强的Form组件
+
+参考链接：
+
+https://github.com/digmyth/Tornado/tree/master/Custom_define_Form
 
 
