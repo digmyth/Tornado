@@ -1,5 +1,10 @@
 
 
+## 自定义Session组件（公共组件，Tornado为例）
+
+
+Tornado有cookie功能，但缺少session功能，这里我们自己开发实现一个Tornado 的session功能
+
 tornado执行到类的get()或post()时己经是对象调用了，那么这个类一定实例化在前，也就是先执行了`__init__()`构造方法,我们在源码里可以看到构造函数最后还有一个勾子函数`self.initialize(**kwargs)`,也就是说我们Handler类可以定义一个initialize方法，不必自己定义重写__init__()构造方法
 
 同时还有一个知识点,`{'k1':'v1'}`参数会传给`initialize(**kwargs)`方法的**kwargs参数，'n1'是URL别名
