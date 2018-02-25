@@ -4,8 +4,10 @@
 这里主要学习Tornado牛逼之处，异步非阻塞，其中有异步类库和Future相关知识，很重要
 
 参考链接：
+[参考1](http://www.cnblogs.com/wupeiqi/articles/6536518.html)
+[参考2](http://www.cnblogs.com/wupeiqi/articles/5702910.html)
 
-http://www.cnblogs.com/wupeiqi/articles/6536518.html
+
 
 ### 二、Tornado异步探究之Future
 
@@ -184,5 +186,10 @@ if __name__ == "__main__":
     tornado.ioloop.IOLoop.instance().start()
 ```
 
-### 三、
+### 三、Tornado-MySQL实现用户登录示例
+[参考](http://www.cnblogs.com/wupeiqi/articles/5702910.html)
+
+```
+
+```
 
