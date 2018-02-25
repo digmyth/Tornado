@@ -264,8 +264,6 @@ settings = {
 ```
  
  
- 
-
 
 
 
@@ -281,7 +279,9 @@ Tornado原生支持Websocket
 
 ## 自定义Session组件（公共组件，Tornado为例）
 
+参考链接：
 
+https://github.com/digmyth/Tornado/blob/master/Tornado_Session_define/tornado_session.md
 
 ## 自定义Form验证组件（公共组件，Tornado为例）
 
