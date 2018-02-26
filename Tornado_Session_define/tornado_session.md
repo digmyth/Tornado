@@ -25,6 +25,7 @@ application = tornado.web.Application([
 cookies/session流程
 
 1 生成一段随机字符串作为value写入浏览器，key一般为'session_id',称为cookies
+
 2 服务端session中保存敏感信息,key为这个随机字符串，value={'user':'wxq','k1':'v1'}自定义session属性
 
 session_code.py示例代码
