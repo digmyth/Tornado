@@ -192,8 +192,7 @@ if __name__ == "__main__":
 
 http://www.cnblogs.com/wupeiqi/articles/5702910.html
 
-安装模块
-是对pymysql的封装，基于Future实现了连接池异步的模块
+Tornado-MySQL是对pymysql的封装，基于Future实现了连接池异步的,模块pip安装
 ```
 pip3 install Tornado-MySQL
 ```
