@@ -290,3 +290,203 @@ def run():
 if __name__ == '__main__':
     run()
 ```
+
+# WebSocket高级往篇
+
+前面我们学习了WebSocket，我们知道客户端要与服务端进行WebSoccket通信，客户端要和服务端握手，握手成功后才能通信。
+
+握手： 客户端发出握手请求，服务端在握手请求中取出“Sec-WebSocket-Key”，把“Sec-WebSocket-Key”加上一个特殊字符串
+“258EAFA5-E914-47DA-95CA-C5AB0DC85B11”，然后计算SHA-1摘要，之后进行BASE-64编码，将结果做为“Sec-WebSocket-Accept”头的值，返回给客户端。如此操作，可以尽量避免普通HTTP请求被误认为Websocket协议。
+
+如果给定了“Sec-WebSocket-Key”，那么摘要算法代码如下，服务器会把摘要后值返回给客户端完成握手操作。
+```
+#!/usr/bin/python3
+import hashlib
+import base64
+
+SecKey = 'sN9cRrP/n9NdMgdcy2VJFQ=='   # browser 自动携带的随机字符串
+Magic_string = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
+
+def server_algorithm(SecKey):
+    str = SecKey + Magic_string
+    sec_str = base64.b64encode(hashlib.sha1(str.encode('utf-8')).digest())
+    return sec_str
+
+print(server_algorithm(SecKey))
+```
+
+如果我们己经有一个socket server，真的能收到握手信息吗？
+socker_server.py
+```
+#!/usr/bin/env python3
+
+import socket
+
+
+conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+conn.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
+conn.bind(('127.0.0.1',8000))
+conn.listen(5)
+
+
+client,addr = conn.accept()
+print(client.recv(8192))
+print(addr)
+```
+
+
+### 如何发送握手请求？
+
+方式一：
+可直接在浏览器console终端下手动发送socket请求，请求中包含握手信息
+```
+>var sock = new WebSocket('ws://127.0.0.1:8000/xxoo')
+undefined
+```
+
+此时浏览器会报`VM44:1 WebSocket connection to 'ws://127.0.0.1:8000/xxoo' failed: Connection closed before receiving a handshake response`的错，是因为服务器端没有返回摘要后的值，
+表示没有握手成功。
+
+方式二：
+直接编写client.html用浏览器运行
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket test</title>
+</head>
+<body>
+    <h1>WebSocket study....</h1>
+    <script type="text/javascript">
+       var sock = new WebSocket('ws://127.0.0.1:8000/xxoo')
+    </script>
+</body>
+</html>
+```
+
+此时服务器会收到类似`b'GET /xxoo HTTP/1.1\r\nHost: 127.0.0.1:8000\r\nConnection: Upgrade...client_max_window_bits\r\n\r\n'`信息，里面包含“`Sec-WebSocket-Key`”
+
+如果我们用一个函数手动取出“Sec-WebSocket-Key”，然后手动摘要后把值再手动返回给客户端，这样就握手成功不会报错了。
+
+处理握手信息的函数(get_headers)如下
+```
+def get_headers(data):
+    """
+    将请求头格式化成字典
+    :param data:
+    :return:
+    """
+    header_dict = {}
+    data = str(data, encoding='utf-8')
+ 
+    for i in data.split('\r\n'):
+        print(i)
+    header, body = data.split('\r\n\r\n', 1)
+    header_list = header.split('\r\n')
+    for i in range(0, len(header_list)):
+        if i == 0:
+            if len(header_list[i].split(' ')) == 3:
+                header_dict['method'], header_dict['url'], header_dict['protocol'] = header_list[i].split(' ')
+        else:
+            k, v = header_list[i].split(':', 1)
+            header_dict[k] = v.strip()
+    return header_dict
+```
+
+把摘要后的值返回给客户端
+```
+conn, address = sock.accept()
+data = conn.recv(1024)
+headers = get_headers(data) # 提取请求头信息
+# 对请求头中的sec-websocket-key进行加密
+response_tpl = "HTTP/1.1 101 Switching Protocols\r\n" \
+      "Upgrade:websocket\r\n" \
+      "Connection: Upgrade\r\n" \
+      "Sec-WebSocket-Accept: %s\r\n" \
+      "WebSocket-Location: ws://%s%s\r\n\r\n"
+magic_string = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
+value = headers['Sec-WebSocket-Key'] + magic_string
+ac = base64.b64encode(hashlib.sha1(value.encode('utf-8')).digest())
+response_str = response_tpl % (ac.decode('utf-8'), headers['Host'], headers['url'])
+conn.send(bytes(response_str, encoding='utf-8'))
+```
+
+摘要后的值返回给客户端后就完成了握手过程，客户端就不会再报连接错误了。
+
+
+### 接收客户端发来的数据
+
+完成握手操作后就客户端就可以向服务器发送数据了，只需console终端`sock.send('dimyth')`
+
+服务端接收
+```
+info = conn.recv(1024)
+print(info)  # 这里是字节
+```
+
+服务器端收到客户端发来的数据，这个数据需要服务器解包，解包过程如下
+```
+    payload_len = info[1] & 127
+    if payload_len == 126:
+        extend_payload_len = info[2:4]
+        mask = info[4:8]
+        decoded = info[8:]
+    elif payload_len == 127:
+        extend_payload_len = info[2:10]
+        mask = info[10:14]
+        decoded = info[14:]
+    else:
+        extend_payload_len = None
+        mask = info[2:6]
+        decoded = info[6:]
+
+    bytes_list = bytearray()
+    for i in range(len(decoded)):
+        chunk = decoded[i] ^ mask[i % 4]
+        bytes_list.append(chunk)
+    body = str(bytes_list, encoding='utf-8')
+    print(body)    # 解出真正数据
+```
+
+那么服务器给客户端发送数据要就封包。
+```
+def send_msg(conn, msg_bytes):
+    """
+    WebSocket服务端向客户端发送消息
+    :param conn: 客户端连接到服务器端的socket对象,即： conn,address = socket.accept()
+    :param msg_bytes: 向客户端发送的字节
+    :return: 
+    """
+    import struct
+
+    token = b"\x81"
+    length = len(msg_bytes)
+    if length < 126:
+        token += struct.pack("B", length)
+    elif length <= 0xFFFF:   # 65535
+        token += struct.pack("!BH", 126, length)
+    else:
+        token += struct.pack("!BQ", 127, length)
+
+    msg = token + msg_bytes
+    conn.send(msg)
+    return True
+```
+
+对上面BHQ说明一下，B代表1个字节，H代表2个字节，Q代表8个字节
+
+### 客户端如何收消息呢？
+```
+    <div id="content"></div>
+    <script type="text/javascript">
+       var sock = new WebSocket('ws://127.0.0.1:8000/xxoo');
+         sock.onmessage = function (event) {
+            /* 服务器端向客户端发送数据时，自动执行 */
+            var response = event.data;
+            var newTag = document.createElement('div');
+            newTag.innerHTML = response;
+            document.getElementById('content').appendChild(newTag);
+        };
+    </script>
+```
