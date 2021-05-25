@@ -291,7 +291,7 @@ if __name__ == '__main__':
     run()
 ```
 
-# WebSocket高级往篇
+# WebSocket高级篇
 
 前面我们学习了WebSocket，我们知道客户端要与服务端进行WebSoccket通信，客户端要和服务端握手，握手成功后才能通信。
 
